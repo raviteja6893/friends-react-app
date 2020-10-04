@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
+import axios from 'axios';
 import './App.css';
 
 class App extends React.Component {
@@ -10,17 +10,29 @@ class App extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+  componentDidMount() {
+    axios.get('http://localhost:8080/friends')
+      .then(response => {
+        this.setState({ friends: response.data.map(item => item.name) });
+      });
+  }
 
   handleChange(event) {
     this.setState({friend: event.target.value});
   }
 
   handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.friend);
     this.setState(prevState => ({
       friends: [...prevState.friends, this.state.friend]
     }))
     event.preventDefault();
+    axios.post('http://localhost:8080/friends', {"name": this.state.friend})
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      })
   }
 
   render() {
